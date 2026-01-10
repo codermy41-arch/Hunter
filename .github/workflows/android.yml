@@ -16,21 +16,25 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: Install System Dependencies
+      - name: Install Modern Dependencies
         run: |
           sudo apt update
-          # Sari modern libraries install kar rahe hain jo APK build ke liye zaroori hain
           sudo apt install -y git zip unzip openjdk-17-jdk python3-pip autoconf libtool pkg-config zlib1g-dev libncurses-dev libssl-dev libffi-dev build-essential cmake
-          pip install --upgrade pip
-          pip install buildozer cython==0.29.33 sh
+          # Buildozer ko 'User' path mein install kar rahe hain
+          pip install --user --upgrade buildozer cython==0.29.33 wheel setuptools
+          # PATH set kar rahe hain taaki 'buildozer' command chale
+          echo "/home/runner/.local/bin" >> $GITHUB_PATH
 
-      - name: Run Buildozer (This takes 15-20 mins)
+      - name: Build Android APK
         run: |
-          # Is baar hum check kar rahe hain ki files sahi jagah hain ya nahi
+          # Pehle check karo ki files hain ya nahi
           ls -R
+          # Ab build shuru karo verbose mode mein taaki real error dikhe
           yes | buildozer android debug
+        timeout-minutes: 45
 
       - name: Upload APK
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: Hunter-APK
