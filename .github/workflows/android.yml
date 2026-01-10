@@ -9,26 +9,29 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4  # Latest version
+        uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v5  # Latest version
+        uses: actions/setup-python@v5
         with:
           python-version: '3.10'
 
-      - name: Install dependencies
+      - name: Install System Dependencies
         run: |
           sudo apt update
-          sudo apt install -y git zip unzip openjdk-17-jdk python3-pip autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libtinfo5 cmake libffi-dev libssl-dev
+          # Sari modern libraries install kar rahe hain jo APK build ke liye zaroori hain
+          sudo apt install -y git zip unzip openjdk-17-jdk python3-pip autoconf libtool pkg-config zlib1g-dev libncurses-dev libssl-dev libffi-dev build-essential cmake
           pip install --upgrade pip
           pip install buildozer cython==0.29.33 sh
 
-      - name: Build APK (This takes 15-20 mins)
+      - name: Run Buildozer (This takes 15-20 mins)
         run: |
+          # Is baar hum check kar rahe hain ki files sahi jagah hain ya nahi
+          ls -R
           yes | buildozer android debug
 
       - name: Upload APK
-        uses: actions/upload-artifact@v4  # Latest version
+        uses: actions/upload-artifact@v4
         with:
           name: Hunter-APK
           path: bin/*.apk
