@@ -1,23 +1,29 @@
 [app]
-title = Hunter AI
-package.name = hunterapp
+title = Hungry Hunter AI
+package.name = hungryhunter
 package.domain = org.ai.hunter
 source.dir = .
 source.include_exts = py,png,jpg,kv,atlas,html,css,js
 version = 1.0
 
-# Basic Requirements
-requirements = python3,kivy==2.2.1,requests,urllib3,certifi,idna,chardet
+# Permissions
+android.permissions = INTERNET, READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE, SYSTEM_ALERT_WINDOW, FOREGROUND_SERVICE, FOREGROUND_SERVICE_MEDIA_PROJECTION
 
+# Modern Android Settings
+android.api = 34
+android.minapi = 23
+android.sdk = 34
+android.ndk = 25b
+android.ndk_api = 23
 orientation = portrait
 fullscreen = 0
-android.permissions = INTERNET
-android.api = 31
-android.minapi = 21
-android.ndk = 25b
-android.accept_sdk_license = True
-android.archs = arm64-v8a
+
+# Requirements
+requirements = python3,kivy==2.3.0,pillow,requests,certifi,google-generativeai,pyjnius,android
+
+# (Optional) For high performance video/image processing if needed later
+# requirements = python3,kivy,opencv,numpy,google-generativeai,pyjnius,android
 
 [buildozer]
 log_level = 2
-warn_on_root = 0
+warn_on_root = 1
