@@ -15,6 +15,8 @@
             --dark: #0a0c10;
             --card-bg: #161a22;
             --border: #1e2633;
+            --red: #ff4b2b;
+            --green: #00f2fe;
         }
 
         * {
@@ -112,34 +114,76 @@
             justify-content: center;
             gap: 8px;
             margin-bottom: 15px;
-            color: #00ff00;
             font-weight: 700;
         }
 
         .dot {
             width: 8px;
             height: 8px;
-            background: #00ff00;
             border-radius: 50%;
+        }
+
+        .status.online {
+            color: #00ff00;
+        }
+
+        .status.online .dot {
+            background: #00ff00;
             box-shadow: 0 0 10px #00ff00;
+        }
+
+        .status.offline {
+            color: var(--red);
+        }
+
+        .status.offline .dot {
+            background: var(--red);
+            box-shadow: 0 0 10px var(--red);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: auto;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            flex: 1;
+            border: none;
+            padding: 18px;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 900;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .start-btn {
+            background: var(--green);
+            color: #000;
+            box-shadow: 0 5px 15px rgba(0, 242, 254, 0.3);
+        }
+
+        .stop-btn {
+            background: var(--red);
+            color: #fff;
+            box-shadow: 0 5px 15px rgba(255, 75, 43, 0.3);
+            display: none;
         }
 
         .predict-btn {
             width: 100%;
-            background: linear-gradient(45deg, var(--neon), #4facfe);
+            background: #fff;
             color: #000;
-            border: none;
-            padding: 18px;
-            border-radius: 12px;
-            font-size: 20px;
-            font-weight: 900;
-            margin-top: auto;
-            margin-bottom: 20px;
-            cursor: pointer;
+            display: none;
+            margin-bottom: 15px;
+            box-shadow: 0 5px 15px rgba(255, 255, 255, 0.2);
         }
 
-        .predict-btn:active {
+        .btn:active {
             transform: scale(0.96);
+            opacity: 0.9;
         }
 
         .strategy-text {
@@ -164,9 +208,9 @@
         </div>
 
         <div class="card">
-            <div class="status"><span class="dot"></span> AI ENGINE ONLINE</div>
+            <div id="statusIndicator" class="status offline"><span class="dot"></span> ENGINE OFFLINE</div>
             <div class="label">SIGNAL PREDICTION</div>
-            <div class="prediction-box" id="prediction">READY</div>
+            <div class="prediction-box" id="prediction">OFF</div>
             <div style="font-size: 18px; color: var(--neon); font-weight: 800;">
                 CONFIDENCE: <span id="conf">--</span>%
             </div>
@@ -175,21 +219,32 @@
         <div class="card" style="flex: 1;">
             <div class="label" style="margin-bottom: 12px; text-align: left;">AI STRATEGY</div>
             <div id="strategy" class="strategy-text">
-                Setup your API key in settings and press Predict for Moj Hungry Game analysis.
+                Press START to activate the AI Hunter Engine.
             </div>
         </div>
 
-        <button class="predict-btn" onclick="getPrediction()">AI PREDICT</button>
+        <button id="predictBtn" class="btn predict-btn" onclick="getPrediction()">AI PREDICT</button>
+
+        <div class="btn-group">
+            <button id="startBtn" class="btn start-btn" onclick="toggleEngine(true)">START ENGINE</button>
+            <button id="stopBtn" class="btn stop-btn" onclick="toggleEngine(false)">STOP ENGINE</button>
+        </div>
     </div>
 
     <script>
         const items = ["Chai", "Samosa", "Softy", "Popcorn", "Chocolate", "Laddu", "Burger", "Pizza"];
+        let isEngineRunning = false;
+
         const el = {
             pred: document.getElementById('prediction'),
             conf: document.getElementById('conf'),
             strat: document.getElementById('strategy'),
             set: document.getElementById('settings'),
-            key: document.getElementById('apiKey')
+            key: document.getElementById('apiKey'),
+            status: document.getElementById('statusIndicator'),
+            startBtn: document.getElementById('startBtn'),
+            stopBtn: document.getElementById('stopBtn'),
+            predictBtn: document.getElementById('predictBtn')
         };
 
         function toggleSettings() { el.set.style.display = el.set.style.display === 'block' ? 'none' : 'block'; }
@@ -200,7 +255,31 @@
             toggleSettings();
         }
 
+        function toggleEngine(start) {
+            isEngineRunning = start;
+            if (start) {
+                el.status.className = "status online";
+                el.status.innerHTML = '<span class="dot"></span> ENGINE ACTIVE';
+                el.pred.textContent = "READY";
+                el.strat.textContent = "Engine is running. Press Predict when round ends.";
+                el.startBtn.style.display = "none";
+                el.stopBtn.style.display = "block";
+                el.predictBtn.style.display = "block";
+            } else {
+                el.status.className = "status offline";
+                el.status.innerHTML = '<span class="dot"></span> ENGINE OFFLINE';
+                el.pred.textContent = "OFF";
+                el.conf.textContent = "--";
+                el.strat.textContent = "Press START to activate the AI Hunter Engine.";
+                el.startBtn.style.display = "block";
+                el.stopBtn.style.display = "none";
+                el.predictBtn.style.display = "none";
+            }
+        }
+
         async function getPrediction() {
+            if (!isEngineRunning) return;
+
             const key = localStorage.getItem('hunter_key');
             if (!key) { alert("Add API Key in Settings!"); toggleSettings(); return; }
 
@@ -228,8 +307,10 @@
                 if (navigator.vibrate) navigator.vibrate(100);
 
                 setTimeout(() => {
-                    el.pred.textContent = "WAITING";
-                    el.strat.textContent = "Listening for next round...";
+                    if (isEngineRunning) {
+                        el.pred.textContent = "READY";
+                        el.strat.textContent = "Waiting for next round...";
+                    }
                 }, 10000);
 
             } catch (error) {
