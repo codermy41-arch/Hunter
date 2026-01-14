@@ -1,33 +1,53 @@
-name: Build Android APK
-on: [push, workflow_dispatch]
+name: Build Hungry Hunter APK
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
 
 jobs:
   build:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
+    
     steps:
       - uses: actions/checkout@v4
+
+      - name: Get Date
+        id: get-date
+        run: |
+          echo "date=$(date -u +'%Y%m%d')" >> $GITHUB_OUTPUT
+        shell: bash
+
+      - name: Cache Buildozer
+        uses: actions/cache@v4
+        with:
+          path: .buildozer
+          key: ${{ runner.os }}-buildozer-${{ hashFiles('buildozer.spec') }}-${{ steps.get-date.outputs.date }}
+          restore-keys: |
+            ${{ runner.os }}-buildozer-
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
+          python-version: '3.11'
 
-      - name: Install System dependencies
+      - name: Install Dependencies
         run: |
           sudo apt update
           sudo apt install -y git zip unzip openjdk-17-jdk python3-pip autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libtinfo5 cmake libffi-dev libssl-dev
           pip install --upgrade pip
-          pip install buildozer cython==0.29.33 sh
+          pip install buildozer cython==3.0.10 sh
 
-      - name: Build with Buildozer
+      - name: Build APK
         run: |
-          mkdir -p ~/.android
-          touch ~/.android/repositories.cfg
+          # Accepting Android SDK licenses
           yes | buildozer android debug
-        shell: bash
+        # Increasing timeout for first build
+        timeout-minutes: 60
 
-      - name: Upload APK
+      - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Hunter-App
+          name: Hungry-Hunter-Pro
           path: bin/*.apk
+          if-no-files-found: error
