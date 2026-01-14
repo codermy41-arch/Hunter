@@ -1,160 +1,57 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Hungry Hunter AI | Pro</title>
+    <title>Hungry Hunter Pro | Web AI</title>
     <style>
-        :root {
-            --neon: #00f2fe;
-            --dark: #0a0c10;
-            --card-bg: #161a22;
-            --border: #1e2633;
-        }
-
-        * {
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        body {
-            background-color: var(--dark);
-            color: #ffffff;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .header {
-            padding: 15px 20px;
-            background: #000;
-            border-bottom: 1px solid var(--neon);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            height: 60px;
-        }
-
-        .logo {
-            font-weight: 800;
-            font-size: 20px;
-            color: var(--neon);
-            letter-spacing: 1px;
-        }
-
-        .container {
-            padding: 15px;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .card {
-            background: var(--card-bg);
-            border-radius: 12px;
-            padding: 20px;
-            border: 1px solid var(--border);
-            text-align: center;
-        }
-
-        .prediction-box {
-            font-size: 42px;
-            font-weight: 800;
-            color: #fff;
-            margin: 10px 0;
-        }
-
-        .label {
-            color: var(--neon);
-            font-size: 11px;
-            text-transform: uppercase;
-            font-weight: 700;
-            letter-spacing: 1.5px;
-        }
-
-        #settings {
-            display: none;
-            background: #000;
-            padding: 15px;
-            border-radius: 8px;
-            border: 1px solid #333;
-            margin-bottom: 5px;
-        }
-
-        input {
-            width: 100%;
-            background: #1a1a1a;
-            border: 1px solid #333;
-            color: var(--neon);
-            padding: 12px;
-            border-radius: 6px;
-            margin-top: 8px;
-            font-size: 14px;
-        }
-
-        .status {
-            font-size: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 5px;
-            margin-bottom: 10px;
-            opacity: 0.8;
-        }
-
-        .dot {
-            width: 6px;
-            height: 6px;
-            background: #00ff00;
-            border-radius: 50%;
-            box-shadow: 0 0 5px #00ff00;
-        }
-
-        .strategy-text {
-            font-size: 14px;
-            color: #ccc;
-            line-height: 1.5;
-            text-align: left;
-        }
+        :root { --neon: #00f2fe; --dark: #0a0c10; --card-bg: #161a22; --border: #1e2633; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { background-color: var(--dark); color: #ffffff; font-family: system-ui, -apple-system, sans-serif; margin: 0; padding: 0; overflow: hidden; height: 100vh; display: flex; flex-direction: column; }
+        .header { padding: 15px 20px; background: #000; border-bottom: 2px solid var(--neon); display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-weight: 800; font-size: 18px; color: var(--neon); }
+        .container { padding: 15px; flex: 1; display: flex; flex-direction: column; gap: 15px; }
+        .card { background: var(--card-bg); border-radius: 12px; padding: 20px; border: 1px solid var(--border); text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+        .prediction-box { font-size: 38px; font-weight: 800; color: #fff; margin: 10px 0; text-shadow: 0 0 10px var(--neon); }
+        .label { color: var(--neon); font-size: 11px; text-transform: uppercase; font-weight: 700; letter-spacing: 1.5px; }
+        #settings { display: none; background: #000; padding: 15px; border-radius: 8px; border: 1px solid #333; margin-bottom: 10px; }
+        input { width: 100%; background: #1a1a1a; border: 1px solid #333; color: var(--neon); padding: 12px; border-radius: 6px; margin-top: 8px; font-size: 14px; outline: none; }
+        .status { font-size: 10px; display: flex; align-items: center; justify-content: center; gap: 5px; margin-bottom: 10px; opacity: 0.8; }
+        .dot { width: 6px; height: 6px; background: #00ff00; border-radius: 50%; box-shadow: 0 0 5px #00ff00; }
+        .predict-btn { width: 100%; background: var(--neon); color: #000; border: none; padding: 15px; border-radius: 12px; font-size: 18px; font-weight: 800; margin-top: auto; cursor: pointer; transition: 0.2s; }
+        .predict-btn:active { transform: scale(0.95); opacity: 0.8; }
+        .strategy-text { font-size: 14px; color: #ccc; line-height: 1.5; text-align: left; min-height: 45px; }
     </style>
 </head>
-
 <body>
     <div class="header">
         <div class="logo">HUNGRY HUNTER PRO</div>
-        <div onclick="toggleSettings()" style="cursor: pointer; padding: 5px;">⚙️</div>
+        <div onclick="toggleSettings()" style="cursor: pointer; font-size: 20px;">⚙️</div>
     </div>
 
     <div class="container">
         <div id="settings">
             <span class="label">Gemini API Key</span>
-            <input type="password" id="apiKey" placeholder="Enter API Key..." onchange="saveKey()">
+            <input type="password" id="apiKey" placeholder="Paste Key & Press Enter" onchange="saveKey()">
         </div>
 
         <div class="card">
-            <div class="status"><span class="dot"></span> ENGINE LIVE</div>
-            <div class="label">PREDICTION</div>
+            <div class="status"><span class="dot"></span> WEB ENGINE ACTIVE</div>
+            <div class="label">NEXT WINNER</div>
             <div class="prediction-box" id="prediction">READY</div>
-            <div style="font-size: 16px; color: var(--neon); font-weight: 600;">
-                CONFIDENCE: <span id="conf">--</span>%
-            </div>
+            <div style="font-size: 16px; color: var(--neon); font-weight: 600;">CONFIDENCE: <span id="conf">--</span>%</div>
         </div>
 
         <div class="card" style="flex: 1;">
-            <div class="label" style="margin-bottom: 12px;">STRATEGY GUIDE</div>
-            <div id="strategy" class="strategy-text">
-                Press AI PREDICT to start ultra-fast analysis.
-            </div>
+            <div class="label" style="margin-bottom: 12px;">AI STRATEGY</div>
+            <div id="strategy" class="strategy-text">Setup your API key and press predict for Moj Hungry Game.</div>
         </div>
+
+        <button class="predict-btn" onclick="getPrediction()">AI PREDICT</button>
     </div>
 
     <script>
+        const items = ["Chai", "Samosa", "Softy", "Popcorn", "Chocolate", "Laddu", "Burger", "Pizza"];
         const el = {
             pred: document.getElementById('prediction'),
             conf: document.getElementById('conf'),
@@ -163,26 +60,49 @@
             key: document.getElementById('apiKey')
         };
 
-        function toggleSettings() {
-            el.set.style.display = el.set.style.display === 'block' ? 'none' : 'block';
+        function toggleSettings() { el.set.style.display = el.set.style.display === 'block' ? 'none' : 'block'; }
+        function saveKey() { localStorage.setItem('gh_key', el.key.value); alert("Key Saved!"); }
+
+        async function getPrediction() {
+            const key = localStorage.getItem('gh_key');
+            if (!key) { alert("Please set API Key in settings!"); toggleSettings(); return; }
+
+            el.pred.textContent = "THINKING...";
+            el.strat.textContent = "AI is analyzing Moj Hungry Game patterns...";
+
+            try {
+                const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`;
+                const prompt = `You are an expert predictor for Moj India Hungry Game. Possible items: ${items.join(", ")}. Predict the next winner. Response must be JSON: {"item": "NAME", "confidence": %, "strategy": "..."}. Only use items from the list. Response must be pure JSON.`;
+                
+                const res = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+                });
+
+                const data = await res.json();
+                const text = data.candidates[0].content.parts[0].text;
+                const result = JSON.parse(text.replace(/```json|```/g, '').trim());
+
+                el.pred.textContent = result.item.toUpperCase();
+                el.conf.textContent = result.confidence;
+                el.strat.textContent = result.strategy;
+
+                if (window.navigator.vibrate) window.navigator.vibrate(100);
+
+                // Auto reset after 10 seconds
+                setTimeout(() => {
+                    el.pred.textContent = "WAITING";
+                    el.strat.textContent = "Analyzing background patterns for next round...";
+                }, 10000);
+
+            } catch (err) {
+                el.pred.textContent = "ERROR";
+                el.strat.textContent = "Error: Check your API Key or Internet connection.";
+            }
         }
 
-        function saveKey() {
-            localStorage.setItem('gh_key', el.key.value);
-        }
-
-        function updatePrediction(item, confidence, strategy) {
-            el.pred.textContent = item;
-            el.conf.textContent = confidence;
-            el.strat.textContent = strategy;
-            if (window.navigator.vibrate) window.navigator.vibrate(50);
-        }
-
-        window.onload = () => {
-            const saved = localStorage.getItem('gh_key');
-            if (saved) el.key.value = saved;
-        };
+        window.onload = () => { if (localStorage.getItem('gh_key')) el.key.value = localStorage.getItem('gh_key'); };
     </script>
 </body>
-
 </html>
