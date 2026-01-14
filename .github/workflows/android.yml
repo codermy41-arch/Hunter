@@ -7,47 +7,30 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04 # 22.04 sabse stable hai Buildozer ke liye
     
     steps:
       - uses: actions/checkout@v4
 
-      - name: Get Date
-        id: get-date
-        run: |
-          echo "date=$(date -u +'%Y%m%d')" >> $GITHUB_OUTPUT
-        shell: bash
-
-      - name: Cache Buildozer
-        uses: actions/cache@v4
-        with:
-          path: .buildozer
-          key: ${{ runner.os }}-buildozer-${{ hashFiles('buildozer.spec') }}-${{ steps.get-date.outputs.date }}
-          restore-keys: |
-            ${{ runner.os }}-buildozer-
-
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: '3.10'
 
-      - name: Install Dependencies
+      - name: Install System dependencies
         run: |
           sudo apt update
           sudo apt install -y git zip unzip openjdk-17-jdk python3-pip autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libtinfo5 cmake libffi-dev libssl-dev
           pip install --upgrade pip
-          pip install buildozer cython==3.0.10 sh
+          pip install buildozer cython==0.29.33 sh # Cython ka ye version Kivy ke liye best hai
 
-      - name: Build APK
+      - name: Build with Buildozer
         run: |
-          # Accepting Android SDK licenses
           yes | buildozer android debug
-        # Increasing timeout for first build
-        timeout-minutes: 60
+        continue-on-error: false
 
-      - name: Upload APK Artifact
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: Hungry-Hunter-Pro
+          name: Hungry-Hunter-App
           path: bin/*.apk
-          if-no-files-found: error
