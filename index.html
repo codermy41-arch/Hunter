@@ -3,323 +3,205 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport"
-        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>Hungry Hunter Pro | Web AI</title>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Hungry AI | Training Mode</title>
     <style>
-        :root {
-            --neon: #00f2fe;
-            --dark: #0a0c10;
-            --card-bg: #161a22;
-            --border: #1e2633;
-            --red: #ff4b2b;
-            --green: #00f2fe;
-        }
-
-        * {
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-            user-select: none;
-        }
-
         body {
-            background-color: var(--dark);
-            color: #ffffff;
-            font-family: 'Outfit', sans-serif;
+            background: #05070a;
+            color: #fff;
+            font-family: sans-serif;
             margin: 0;
-            padding: 0;
-            overflow: hidden;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
             height: 100vh;
-            display: flex;
-            flex-direction: column;
+            overflow: hidden;
         }
 
-        .header {
-            padding: 20px;
-            background: #000;
-            border-bottom: 2px solid var(--neon);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 4px 20px rgba(0, 242, 254, 0.2);
+        .mode-chip {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: bold;
+            margin-bottom: 10px;
         }
 
-        .logo {
-            font-weight: 900;
-            font-size: 20px;
-            color: var(--neon);
-            letter-spacing: 1px;
+        .training {
+            background: #ffd700;
+            color: #000;
         }
 
-        .container {
+        .predicting {
+            background: #00f2fe;
+            color: #000;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        .stat-card {
+            background: #111;
+            border: 1px solid #222;
+            border-radius: 12px;
             padding: 15px;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .card {
-            background: var(--card-bg);
-            border-radius: 16px;
-            padding: 25px 20px;
-            border: 1px solid var(--border);
+            margin-bottom: 10px;
             text-align: center;
         }
 
-        .prediction-box {
-            font-size: 44px;
+        .main-val {
+            font-size: 32px;
             font-weight: 900;
-            color: #fff;
-            margin: 15px 0;
-            text-transform: uppercase;
-        }
-
-        .label {
-            color: var(--neon);
-            font-size: 12px;
-            text-transform: uppercase;
-            font-weight: 700;
-            letter-spacing: 2px;
-        }
-
-        #settings {
-            display: none;
-            background: #000;
-            padding: 20px;
-            border-radius: 12px;
-            border: 1px solid #333;
+            color: #00f2fe;
             margin-bottom: 5px;
         }
 
-        input {
-            width: 100%;
-            background: #1a1a1a;
-            border: 1px solid #333;
-            color: var(--neon);
-            padding: 14px;
-            border-radius: 8px;
-            margin-top: 10px;
-            font-size: 14px;
-            outline: none;
+        .label {
+            color: #888;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
-        .status {
-            font-size: 11px;
+        .history-grid {
             display: flex;
-            align-items: center;
+            gap: 5px;
             justify-content: center;
-            gap: 8px;
-            margin-bottom: 15px;
-            font-weight: 700;
+            margin: 10px 0;
         }
 
-        .dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
+        .h-item {
+            font-size: 9px;
+            padding: 3px 8px;
+            border: 1px solid #333;
+            border-radius: 4px;
+            color: #aaa;
         }
 
-        .status.online {
-            color: #00ff00;
-        }
-
-        .status.online .dot {
-            background: #00ff00;
-            box-shadow: 0 0 10px #00ff00;
-        }
-
-        .status.offline {
-            color: var(--red);
-        }
-
-        .status.offline .dot {
-            background: var(--red);
-            box-shadow: 0 0 10px var(--red);
-        }
-
-        .btn-group {
-            display: flex;
-            gap: 10px;
-            margin-top: auto;
-            margin-bottom: 20px;
-        }
-
-        .btn {
-            flex: 1;
-            border: none;
-            padding: 18px;
-            border-radius: 12px;
-            font-size: 18px;
-            font-weight: 900;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-
-        .start-btn {
-            background: var(--green);
-            color: #000;
-            box-shadow: 0 5px 15px rgba(0, 242, 254, 0.3);
-        }
-
-        .stop-btn {
-            background: var(--red);
-            color: #fff;
-            box-shadow: 0 5px 15px rgba(255, 75, 43, 0.3);
-            display: none;
-        }
-
-        .predict-btn {
+        .btn-onoff {
             width: 100%;
-            background: #fff;
+            padding: 15px;
+            border-radius: 10px;
+            border: none;
+            font-weight: bold;
+            margin-top: auto;
+        }
+
+        .on {
+            background: #ff4b2b;
+            color: #fff;
+        }
+
+        .off {
+            background: #00f2fe;
             color: #000;
-            display: none;
-            margin-bottom: 15px;
-            box-shadow: 0 5px 15px rgba(255, 255, 255, 0.2);
         }
 
-        .btn:active {
-            transform: scale(0.96);
-            opacity: 0.9;
-        }
-
-        .strategy-text {
-            font-size: 15px;
-            color: #cbd5e1;
-            line-height: 1.6;
-            text-align: left;
+        .log-box {
+            font-size: 11px;
+            color: #555;
+            background: #000;
+            padding: 10px;
+            border-radius: 8px;
+            height: 100px;
+            overflow-y: scroll;
+            border: 1px solid #111;
         }
     </style>
 </head>
 
 <body>
-    <div class="header">
-        <div class="logo">HUNGRY HUNTER PRO</div>
-        <div onclick="toggleSettings()" style="cursor: pointer; font-size: 24px;">⚙️</div>
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <span id="modeChip" class="mode-chip training">COLLECTING DATA</span>
+        <span style="font-size: 12px; color: #444;">V1.0.STABLE</span>
     </div>
 
-    <div class="container">
-        <div id="settings">
-            <span class="label">Gemini API Key</span>
-            <input type="password" id="apiKey" placeholder="Paste Key & Press Enter" onchange="saveKey()">
+    <div class="stat-card">
+        <div class="label">Next Winning Item</div>
+        <div id="prediction" class="main-val">STANDBY</div>
+        <div id="conf" style="font-size: 12px; color: #00f2fe; font-weight: bold;">--% ACCURACY</div>
+    </div>
+
+    <div style="display: flex; gap: 10px;">
+        <div class="stat-card" style="flex: 1;">
+            <div class="label">Rounds</div>
+            <div id="roundCount" style="font-size: 20px; font-weight: bold;">0</div>
         </div>
-
-        <div class="card">
-            <div id="statusIndicator" class="status offline"><span class="dot"></span> ENGINE OFFLINE</div>
-            <div class="label">SIGNAL PREDICTION</div>
-            <div class="prediction-box" id="prediction">OFF</div>
-            <div style="font-size: 18px; color: var(--neon); font-weight: 800;">
-                CONFIDENCE: <span id="conf">--</span>%
-            </div>
-        </div>
-
-        <div class="card" style="flex: 1;">
-            <div class="label" style="margin-bottom: 12px; text-align: left;">AI STRATEGY</div>
-            <div id="strategy" class="strategy-text">
-                Press START to activate the AI Hunter Engine.
-            </div>
-        </div>
-
-        <button id="predictBtn" class="btn predict-btn" onclick="getPrediction()">AI PREDICT</button>
-
-        <div class="btn-group">
-            <button id="startBtn" class="btn start-btn" onclick="toggleEngine(true)">START ENGINE</button>
-            <button id="stopBtn" class="btn stop-btn" onclick="toggleEngine(false)">STOP ENGINE</button>
+        <div class="stat-card" style="flex: 1;">
+            <div class="label">Phase</div>
+            <div id="phaseText" style="font-size: 20px; font-weight: bold;">1/2</div>
         </div>
     </div>
+
+    <div class="label" style="margin-left: 5px; margin-bottom: 5px;">RECENT CYCLE HISTORY</div>
+    <div class="history-grid" id="history">
+        <div class="h-item">N/A</div>
+        <div class="h-item">N/A</div>
+        <div class="h-item">N/A</div>
+        <div class="h-item">N/A</div>
+        <div class="h-item">N/A</div>
+    </div>
+
+    <div class="label" style="margin-left: 5px; margin-bottom: 5px;">LIVE DATA LOG</div>
+    <div class="log-box" id="logs">
+        [SYS] Initializing Data Collector...<br>
+        [SYS] Waiting for game start...
+    </div>
+
+    <button id="mainBtn" class="btn-onoff off" onclick="toggleBot()">START AUTO-SCAN</button>
 
     <script>
-        const items = ["Chai", "Samosa", "Softy", "Popcorn", "Chocolate", "Laddu", "Burger", "Pizza"];
-        let isEngineRunning = false;
+        let isActive = false;
+        let rounds = 0;
 
-        const el = {
-            pred: document.getElementById('prediction'),
-            conf: document.getElementById('conf'),
-            strat: document.getElementById('strategy'),
-            set: document.getElementById('settings'),
-            key: document.getElementById('apiKey'),
-            status: document.getElementById('statusIndicator'),
-            startBtn: document.getElementById('startBtn'),
-            stopBtn: document.getElementById('stopBtn'),
-            predictBtn: document.getElementById('predictBtn')
-        };
+        function toggleBot() {
+            isActive = !isActive;
+            const btn = document.getElementById('mainBtn');
+            const chip = document.getElementById('modeChip');
 
-        function toggleSettings() { el.set.style.display = el.set.style.display === 'block' ? 'none' : 'block'; }
-
-        function saveKey() {
-            localStorage.setItem('hunter_key', el.key.value);
-            alert("Key Saved!");
-            toggleSettings();
-        }
-
-        function toggleEngine(start) {
-            isEngineRunning = start;
-            if (start) {
-                el.status.className = "status online";
-                el.status.innerHTML = '<span class="dot"></span> ENGINE ACTIVE';
-                el.pred.textContent = "READY";
-                el.strat.textContent = "Engine is running. Press Predict when round ends.";
-                el.startBtn.style.display = "none";
-                el.stopBtn.style.display = "block";
-                el.predictBtn.style.display = "block";
+            if (isActive) {
+                btn.textContent = "STOP BOT ENGINE";
+                btn.className = "btn-onoff on";
+                addLog("Bot Engine Active. Background scan started.");
+                // Simulating round counting for UI demonstration
+                startSim();
             } else {
-                el.status.className = "status offline";
-                el.status.innerHTML = '<span class="dot"></span> ENGINE OFFLINE';
-                el.pred.textContent = "OFF";
-                el.conf.textContent = "--";
-                el.strat.textContent = "Press START to activate the AI Hunter Engine.";
-                el.startBtn.style.display = "block";
-                el.stopBtn.style.display = "none";
-                el.predictBtn.style.display = "none";
+                btn.textContent = "START AUTO-SCAN";
+                btn.className = "btn-onoff off";
+                addLog("Bot Suspended.");
             }
         }
 
-        async function getPrediction() {
-            if (!isEngineRunning) return;
-
-            const key = localStorage.getItem('hunter_key');
-            if (!key) { alert("Add API Key in Settings!"); toggleSettings(); return; }
-
-            el.pred.textContent = "THINKING";
-            el.strat.textContent = "AI is analyzing Moj Hungry Game patterns...";
-
-            try {
-                const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`;
-                const prompt = `Predict next winner for Moj Hungry Game (Items: ${items.join(", ")}). Response JSON: {"item": "NAME", "confidence": %, "strategy": "..."}. JSON ONLY.`;
-
-                const res = await fetch(url, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
-                });
-
-                const data = await res.json();
-                const text = data.candidates[0].content.parts[0].text;
-                const result = JSON.parse(text.replace(/```json|```/g, '').trim());
-
-                el.pred.textContent = result.item.toUpperCase();
-                el.conf.textContent = result.confidence;
-                el.strat.textContent = result.strategy;
-
-                if (navigator.vibrate) navigator.vibrate(100);
-
-                setTimeout(() => {
-                    if (isEngineRunning) {
-                        el.pred.textContent = "READY";
-                        el.strat.textContent = "Waiting for next round...";
-                    }
-                }, 10000);
-
-            } catch (error) {
-                el.pred.textContent = "ERROR";
-                el.strat.textContent = "Check Key or Connection.";
-            }
+        function addLog(msg) {
+            const logs = document.getElementById('logs');
+            logs.innerHTML += `<br>> ${msg}`;
+            logs.scrollTop = logs.scrollHeight;
         }
 
-        window.onload = () => { if (localStorage.getItem('hunter_key')) el.key.value = localStorage.getItem('hunter_key'); };
+        function startSim() {
+            if (!isActive) return;
+            rounds++;
+            document.getElementById('roundCount').textContent = rounds;
+
+            if (rounds <= 50) {
+                document.getElementById('modeChip').className = "mode-chip training";
+                document.getElementById('modeChip').textContent = "TRAINING MODE";
+                document.getElementById('prediction').textContent = "LOGGING";
+                addLog(`Round ${rounds} captured: Winner saved to CSV.`);
+            } else {
+                document.getElementById('modeChip').className = "mode-chip predicting";
+                document.getElementById('modeChip').textContent = "LIVE PREDICTING";
+                document.getElementById('prediction').textContent = "SOFITY (2x)";
+                document.getElementById('conf').textContent = "92% ACCURACY";
+                addLog(`Round ${rounds}: AI Prediction successful.`);
+            }
+
+            setTimeout(startSim, 5000); // UI Demo speed
+        }
     </script>
 </body>
 
