@@ -19,7 +19,7 @@ orientation = portrait
 fullscreen = 0
 
 # Requirements
-requirements = python3,kivy==2.3.0,pillow,requests,certifi,google-generativeai,pyjnius,android
+requirements = python3,kivy==2.3.0,pillow,requests,certifi,pyjnius,android
 
 # (Optional) For high performance video/image processing if needed later
 # requirements = python3,kivy,opencv,numpy,google-generativeai,pyjnius,android
